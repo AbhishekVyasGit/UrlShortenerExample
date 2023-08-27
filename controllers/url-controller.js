@@ -19,6 +19,26 @@ async function handleGenerateNewShortURL(req, res) {
   return res.json({ id: shortID });
 });
 
+
+
+router.get("/:shortId", async function handleRedirectTheUrl (req, res) {
+  const shortId = req.params.shortId;
+  const entry = await URL.findOneAndUpdate(
+    {
+      shortId,
+    },
+    {
+      $push: {
+        visitHistory: {
+          timestamp: Date.now(),
+        },
+      },
+    }
+  );
+  res.redirect(entry.redirectURL);
+});
+
+
 router.get("/analytics/:shortId", async function handleGetAnalytics(req, res) {
     const shortId = req.params.shortId;
     const result = await URL.findOne({ shortId });
